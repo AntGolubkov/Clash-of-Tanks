@@ -20,9 +20,25 @@ namespace ClashOfTanks.GUI
     /// </summary>
     public partial class MainWindow : Window
     {
+        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+        long counter = 0;
+
         public MainWindow()
         {
             InitializeComponent();
+            CompositionTarget.Rendering += CompositionTarget_Rendering;
+        }
+
+        private void CompositionTarget_Rendering(object sender, EventArgs e)
+        {
+            if (counter == 0)
+            {
+                stopwatch.Start();
+            }
+            counter++;
+
+            double frameRate = counter / stopwatch.Elapsed.TotalSeconds;
+            Title = frameRate.ToString();
         }
     }
 }
