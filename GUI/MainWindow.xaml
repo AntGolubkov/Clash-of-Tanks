@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ClashOfTanks.GUI"
         mc:Ignorable="d"
         
-        Title="{StaticResource ApplicationName}"
+        Title="{StaticResource ApplicationTitle}"
         ResizeMode="CanMinimize"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterScreen"

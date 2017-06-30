@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+
+using ClashOfTanks.GUI.Service;
 
 namespace ClashOfTanks.GUI
 {
@@ -22,6 +15,22 @@ namespace ClashOfTanks.GUI
         public GameWindow()
         {
             InitializeComponent();
+            CompositionTarget.Rendering += CompositionTarget_Rendering;
+        }
+
+        private void CompositionTarget_Rendering(object sender, EventArgs e)
+        {
+            FrameProcessor.ProcessFrame(BattlefieldCanvas);
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ControlProcessor.GenerateInitialControls(BattlefieldCanvas);
+        }
+
+        private void Window_KeyEvent(object sender, KeyEventArgs e)
+        {
+            InputProcessor.ProcessKeyInput(e);
         }
     }
 }

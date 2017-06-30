@@ -6,19 +6,44 @@
         xmlns:local="clr-namespace:ClashOfTanks.GUI"
         mc:Ignorable="d"
         
-        Title="{StaticResource ApplicationName}"
+        Title="{StaticResource ApplicationTitle}"
         ResizeMode="CanMinimize"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterScreen"
-        WindowStyle="ThreeDBorderWindow">
+        WindowStyle="ThreeDBorderWindow"
+        
+        Loaded="Window_Loaded"
+        KeyDown="Window_KeyEvent"
+        KeyUp="Window_KeyEvent">
+
+    <Window.Resources>
+        <ControlTemplate x:Key="TankControlTemplate"
+                         TargetType="Control">
+
+            <Grid>
+                <Rectangle Fill="{TemplateBinding Background}"
+                           Stroke="Black" StrokeThickness="1"
+                           Width="20" Height="20"/>
+                
+                <Rectangle Fill="{TemplateBinding Background}"
+                           Stroke="Black" StrokeThickness="1"
+                           Width="20" Height="2" Margin="0,0,-10,0"/>
+                
+                <Ellipse Fill="{TemplateBinding Background}"
+                         Stroke="Black" StrokeThickness="1"
+                         Width="12" Height="12"/>
+            </Grid>
+        </ControlTemplate>
+    </Window.Resources>
     
     <Grid>
         <Border BorderBrush="Black" BorderThickness="5"
                 Margin="100">
-            
+
             <Canvas x:Name="BattlefieldCanvas"
                     Background="Wheat"
-                    Width="500" Height="500"/>
+                    Width="500" Height="500">
+            </Canvas>
         </Border>
     </Grid>
 </Window>
