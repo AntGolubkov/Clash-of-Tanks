@@ -20,7 +20,9 @@ namespace ClashOfTanks.GUI.Service
                 Control control = new Control()
                 {
                     Template = battlefieldPanel.FindResource("TankControlTemplate") as ControlTemplate,
-                    Background = Brushes.Red
+                    Background = Brushes.Red,
+                    RenderTransform = new RotateTransform(),
+                    RenderTransformOrigin = new Point(0.5, 0.5)
                 };
 
                 gameplayElement.Control = control;
@@ -41,12 +43,7 @@ namespace ClashOfTanks.GUI.Service
 
                 Canvas.SetLeft(control, gameplayElement.X);
                 Canvas.SetTop(control, -gameplayElement.Y); // Минус из-за инверсии оси Y.
-
-                RotateTransform rotateTransform = new RotateTransform(-gameplayElement.Angle); // Минус из-за инверсии угла.
-                TransformGroup transformGroup = new TransformGroup();
-                transformGroup.Children.Add(rotateTransform);
-                control.RenderTransform = transformGroup;
-                control.RenderTransformOrigin = new Point(0.5, 0.5);
+                (control.RenderTransform as RotateTransform).Angle = -gameplayElement.Angle; // Минус из-за инверсии угла.
             }
         }
     }
