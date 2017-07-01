@@ -6,7 +6,16 @@
 
         public double X { get; internal set; }
         public double Y { get; internal set; }
-        public double Angle { get; internal set; }
+
+        private double angle;
+        public double Angle
+        {
+            get => angle;
+            internal set
+            {
+                angle = value % 360;
+            }
+        }
 
         internal double MoveSpeed { get; set; }
         internal double TurnSpeed { get; set; }
