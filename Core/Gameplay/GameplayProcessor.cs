@@ -43,7 +43,7 @@ namespace ClashOfTanks.Core.Gameplay
                     gameplayElement.TurnSpeed -= 3;
                 }
 
-                gameplayElement.Angle += gameplayElement.Angle + gameplayElement.TurnSpeed;
+                gameplayElement.Angle += gameplayElement.TurnSpeed;
                 gameplayElement.X += gameplayElement.MoveSpeed * Math.Cos(gameplayElement.Angle * Math.PI / 180);
                 gameplayElement.Y += gameplayElement.MoveSpeed * Math.Sin(gameplayElement.Angle * Math.PI / 180);
             }
