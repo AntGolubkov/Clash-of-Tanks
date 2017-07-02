@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Gameplay\GameplayElement.cs" />
     <Compile Include="Gameplay\GameplayProcessor.cs" />
+    <Compile Include="Gameplay\Models\Tank.cs" />
     <Compile Include="User\UserActions.cs" />
     <Compile Include="User\UserInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

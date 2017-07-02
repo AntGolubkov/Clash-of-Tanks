@@ -28,6 +28,8 @@ namespace ClashOfTanks.GUI.Service
                 gameplayElement.Control = control;
                 battlefieldPanel.Children.Add(gameplayElement.Control as Control);
             }
+
+            FrameProcessor.ProcessFrame(battlefieldPanel);
         }
     }
 
@@ -41,9 +43,9 @@ namespace ClashOfTanks.GUI.Service
             {
                 Control control = gameplayElement.Control as Control;
 
-                Canvas.SetLeft(control, gameplayElement.X);
-                Canvas.SetTop(control, -gameplayElement.Y); // Минус из-за инверсии оси Y.
-                (control.RenderTransform as RotateTransform).Angle = -gameplayElement.Angle; // Минус из-за инверсии угла.
+                Canvas.SetLeft(control, gameplayElement.X - gameplayElement.Radius);
+                Canvas.SetTop(control, GameplayElement.Battlefield.Height - gameplayElement.Y - gameplayElement.Radius); // Минус "gameplayElement.Y" из-за инверсии оси Y.
+                (control.RenderTransform as RotateTransform).Angle = -gameplayElement.Angle; // Минус "gameplayElement.Angle" из-за инверсии угла.
             }
         }
     }

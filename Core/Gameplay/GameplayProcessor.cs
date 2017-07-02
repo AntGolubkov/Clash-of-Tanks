@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using ClashOfTanks.Core.Gameplay.Models;
 using ClashOfTanks.Core.User;
 
 namespace ClashOfTanks.Core.Gameplay
@@ -13,7 +14,7 @@ namespace ClashOfTanks.Core.Gameplay
         {
             GameplayElements = new List<GameplayElement>()
             {
-                new GameplayElement()
+                new Tank()
             };
 
             return GameplayElements;
@@ -44,11 +45,36 @@ namespace ClashOfTanks.Core.Gameplay
                 }
 
                 gameplayElement.Angle += gameplayElement.TurnSpeed;
-                gameplayElement.X += gameplayElement.MoveSpeed * Math.Cos(gameplayElement.Angle * Math.PI / 180);
-                gameplayElement.Y += gameplayElement.MoveSpeed * Math.Sin(gameplayElement.Angle * Math.PI / 180);
+
+                double angleInRadians = gameplayElement.Angle * Math.PI / 180;
+                gameplayElement.X += gameplayElement.MoveSpeed * Math.Cos(angleInRadians);
+                gameplayElement.Y += gameplayElement.MoveSpeed * Math.Sin(angleInRadians);
+
+                CheckBorderCollision(gameplayElement);
             }
 
             return GameplayElements;
+        }
+
+        private static void CheckBorderCollision(GameplayElement gameplayElement)
+        {
+            if (gameplayElement.X < gameplayElement.Radius)
+            {
+                gameplayElement.X = gameplayElement.Radius;
+            }
+            else if (gameplayElement.X > GameplayElement.Battlefield.Width - gameplayElement.Radius)
+            {
+                gameplayElement.X = GameplayElement.Battlefield.Width - gameplayElement.Radius;
+            }
+
+            if (gameplayElement.Y < gameplayElement.Radius)
+            {
+                gameplayElement.Y = gameplayElement.Radius;
+            }
+            else if (gameplayElement.Y > GameplayElement.Battlefield.Height - gameplayElement.Radius)
+            {
+                gameplayElement.Y = GameplayElement.Battlefield.Height - gameplayElement.Radius;
+            }
         }
     }
 }

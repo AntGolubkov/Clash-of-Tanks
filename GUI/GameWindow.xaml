@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClashOfTanks.GUI"
+        xmlns:gameplay="clr-namespace:ClashOfTanks.Core.Gameplay;assembly=Core"
         mc:Ignorable="d"
         
         Title="{StaticResource ApplicationTitle}"
@@ -23,15 +24,16 @@
             <Grid>
                 <Rectangle Fill="{TemplateBinding Background}"
                            Stroke="Black" StrokeThickness="1"
-                           Width="20" Height="20"/>
-                
+                           Width="{x:Static local:GameWindow+TankControl.BaseDiameter}" Height="{x:Static local:GameWindow+TankControl.BaseDiameter}"/>
+
                 <Rectangle Fill="{TemplateBinding Background}"
                            Stroke="Black" StrokeThickness="1"
-                           Width="20" Height="2" Margin="0,0,-10,0"/>
-                
+                           Width="{x:Static local:GameWindow+TankControl.GunLength}" Height="2"
+                           Margin="{x:Static local:GameWindow+TankControl.GunMargin}" HorizontalAlignment="Right"/>
+
                 <Ellipse Fill="{TemplateBinding Background}"
                          Stroke="Black" StrokeThickness="1"
-                         Width="12" Height="12"/>
+                         Width="{x:Static local:GameWindow+TankControl.TurretDiameter}" Height="{x:Static local:GameWindow+TankControl.TurretDiameter}"/>
             </Grid>
         </ControlTemplate>
     </Window.Resources>
@@ -42,8 +44,7 @@
 
             <Canvas x:Name="BattlefieldCanvas"
                     Background="Wheat"
-                    Width="500" Height="500">
-            </Canvas>
+                    Width="{x:Static gameplay:GameplayElement+Battlefield.Width}" Height="{x:Static gameplay:GameplayElement+Battlefield.Height}"/>
         </Border>
     </Grid>
 </Window>
