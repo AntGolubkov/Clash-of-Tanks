@@ -7,6 +7,6 @@
              StartupUri="MainWindow.xaml">
     
     <Application.Resources>
-        <system:String x:Key="ApplicationTitle">Clash of Tanks (v0.1.4)</system:String>
+        <system:String x:Key="ApplicationTitle">Clash of Tanks (v0.1.5)</system:String>
     </Application.Resources>
 </Application>

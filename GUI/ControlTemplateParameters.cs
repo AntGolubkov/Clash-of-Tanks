@@ -6,7 +6,7 @@ namespace ClashOfTanks.GUI
 {
     public partial class GameWindow : Window
     {
-        public class TankControl
+        public static class TankControl
         {
             private static double baseDiameter = Tank.BaseRadius * 2;
             private static double turretDiameter = baseDiameter * 0.6;
