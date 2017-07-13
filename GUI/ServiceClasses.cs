@@ -11,48 +11,109 @@ namespace ClashOfTanks.GUI.Service
 {
     public static class ControlProcessor
     {
-        public static void GenerateInitialControls(Panel battlefieldPanel)
+        private static Panel BattlefieldPanel { get; set; }
+
+        public static void SetupControls(Panel battlefieldPanel)
         {
-            IEnumerable<GameplayElement> gameplayElements = GameplayProcessor.GenerateInitialGameplayElements();
+            BattlefieldPanel = battlefieldPanel;
+            GameplayProcessor.SetupGameplay();
+        }
+
+        public static void UpdateControls(IEnumerable<GameplayElement> gameplayElements)
+        {
+            BattlefieldPanel.Children.Clear();
 
             foreach (GameplayElement gameplayElement in gameplayElements)
             {
-                Control control = new Control()
+                Control control;
+
+                if (gameplayElement.Control == null)
                 {
-                    Template = battlefieldPanel.FindResource("TankControlTemplate") as ControlTemplate,
-                    Background = Brushes.Red,
-                    RenderTransform = new RotateTransform(),
-                    RenderTransformOrigin = new Point(0.5, 0.5)
-                };
+                    control = new Control();
 
-                gameplayElement.Control = control;
-                battlefieldPanel.Children.Add(gameplayElement.Control as Control);
+                    switch (gameplayElement.Type)
+                    {
+                        case GameplayElement.Types.Tank:
+                            {
+                                control.Template = BattlefieldPanel.FindResource("TankControlTemplate") as ControlTemplate;
+                                control.Background = Brushes.Red;
+                                Panel.SetZIndex(control, 1);
+                                break;
+                            }
+                        case GameplayElement.Types.Projectile:
+                            {
+                                control.Template = BattlefieldPanel.FindResource("ProjectileControlTemplate") as ControlTemplate;
+                                control.Background = Brushes.Silver;
+                                break;
+                            }
+                        case GameplayElement.Types.Explosion:
+                            {
+                                control.Template = BattlefieldPanel.FindResource("ExplosionControlTemplate") as ControlTemplate;
+                                Panel.SetZIndex(control, 2);
+                                break;
+                            }
+                    }
+
+                    TransformGroup transformGroup = new TransformGroup();
+                    transformGroup.Children.Add(new ScaleTransform());
+                    transformGroup.Children.Add(new RotateTransform());
+
+                    control.RenderTransform = transformGroup;
+                    control.RenderTransformOrigin = new Point(0.5, 0.5);
+
+                    gameplayElement.Control = control;
+                }
+                else
+                {
+                    control = gameplayElement.Control as Control;
+                }
+
+                Canvas.SetLeft(control, gameplayElement.X - GameWindow.СontrolRadius);
+                Canvas.SetTop(control, GameplayElement.Battlefield.Height - gameplayElement.Y - GameWindow.СontrolRadius); // "Минус" gameplayElement.Y из-за инверсии оси Y.
+
+                ScaleTransform scaleTransform = (control.RenderTransform as TransformGroup).Children[0] as ScaleTransform;
+                scaleTransform.ScaleX = gameplayElement.Radius;
+                scaleTransform.ScaleY = gameplayElement.Radius;
+
+                RotateTransform rotateTransform = (control.RenderTransform as TransformGroup).Children[1] as RotateTransform;
+                rotateTransform.Angle = -gameplayElement.Angle; // "Минус" gameplayElement.Angle из-за инверсии угла.
+
+                BattlefieldPanel.Children.Add(control);
             }
-
-            FrameProcessor.ProcessFrame(battlefieldPanel);
         }
     }
 
     public static class FrameProcessor
     {
-        public static void ProcessFrame(Panel battlefieldPanel)
+        private static bool isFirstFrameUpdated = false;
+
+        private static bool IsFirstFrameUpdated
         {
-            IEnumerable<GameplayElement> gameplayElements = GameplayProcessor.ProcessGameplay();
+            get => isFirstFrameUpdated;
+            set => isFirstFrameUpdated = value;
+        }
 
-            foreach (GameplayElement gameplayElement in gameplayElements)
+        public static void UpdateFrame(double frameTimeInterval)
+        {
+            IEnumerable<GameplayElement> gameplayElements;
+
+            if (!IsFirstFrameUpdated)
             {
-                Control control = gameplayElement.Control as Control;
-
-                Canvas.SetLeft(control, gameplayElement.X - gameplayElement.Radius);
-                Canvas.SetTop(control, GameplayElement.Battlefield.Height - gameplayElement.Y - gameplayElement.Radius); // Минус "gameplayElement.Y" из-за инверсии оси Y.
-                (control.RenderTransform as RotateTransform).Angle = -gameplayElement.Angle; // Минус "gameplayElement.Angle" из-за инверсии угла.
+                gameplayElements = GameplayProcessor.UpdateGameplay(0);
+                IsFirstFrameUpdated = true;
             }
+            else
+            {
+                gameplayElements = GameplayProcessor.UpdateGameplay(frameTimeInterval);
+            }
+
+            ControlProcessor.UpdateControls(gameplayElements);
         }
     }
 
     public static class InputProcessor
     {
-        public static void ProcessKeyInput(KeyEventArgs e)
+        public static void UpdateKeyInput(KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -76,8 +137,9 @@ namespace ClashOfTanks.GUI.Service
                         UserInput.KeyDPressed = e.IsDown;
                         break;
                     }
-                default:
+                case Key.Space:
                     {
+                        UserInput.KeySpacePressed = e.IsDown;
                         break;
                     }
             }

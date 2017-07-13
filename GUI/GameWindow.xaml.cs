@@ -12,25 +12,33 @@ namespace ClashOfTanks.GUI
     /// </summary>
     public partial class GameWindow : Window
     {
+        private TimeSpan LastRenderingTime { get; set; }
+
         public GameWindow()
         {
             InitializeComponent();
+            LastRenderingTime = TimeSpan.Zero;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            ControlProcessor.GenerateInitialControls(BattlefieldCanvas);
+            ControlProcessor.SetupControls(BattlefieldCanvas);
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
 
         private void CompositionTarget_Rendering(object sender, EventArgs e)
         {
-            FrameProcessor.ProcessFrame(BattlefieldCanvas);
+            TimeSpan currentRenderingTime = (e as RenderingEventArgs).RenderingTime;
+
+            if (currentRenderingTime.Ticks == LastRenderingTime.Ticks)
+            {
+                return;
+            }
+
+            FrameProcessor.UpdateFrame((currentRenderingTime - LastRenderingTime).TotalSeconds);
+            LastRenderingTime = currentRenderingTime;
         }
 
-        private void Window_KeyEvent(object sender, KeyEventArgs e)
-        {
-            InputProcessor.ProcessKeyInput(e);
-        }
+        private void Window_KeyEvent(object sender, KeyEventArgs e) => InputProcessor.UpdateKeyInput(e);
     }
 }

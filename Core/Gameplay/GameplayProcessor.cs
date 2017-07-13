@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using ClashOfTanks.Core.Gameplay.Models;
 using ClashOfTanks.Core.User;
@@ -8,72 +7,129 @@ namespace ClashOfTanks.Core.Gameplay
 {
     public static class GameplayProcessor
     {
-        private static IEnumerable<GameplayElement> GameplayElements { get; set; }
+        private static List<GameplayElement> GameplayElements { get; set; }
 
-        public static IEnumerable<GameplayElement> GenerateInitialGameplayElements()
+        public static void SetupGameplay()
         {
             GameplayElements = new List<GameplayElement>()
             {
-                new Tank()
+                new Tank(GameplayElement.Battlefield.Width / 2, GameplayElement.Battlefield.Height / 2, 10, 90)
             };
-
-            return GameplayElements;
         }
 
-        public static IEnumerable<GameplayElement> ProcessGameplay()
+        public static IEnumerable<GameplayElement> UpdateGameplay(double timeInterval)
         {
+            List<GameplayElement> addGameplayElements = new List<GameplayElement>();
+            List<GameplayElement> removeGameplayElements = new List<GameplayElement>();
+
             foreach (GameplayElement gameplayElement in GameplayElements)
             {
-                gameplayElement.MoveSpeed = 0;
-                gameplayElement.TurnSpeed = 0;
-
-                if (UserActions.MoveForward)
+                switch (gameplayElement.Type)
                 {
-                    gameplayElement.MoveSpeed += 5;
+                    case GameplayElement.Types.Tank:
+                        {
+                            UpdateTank(gameplayElement as Tank, timeInterval, false, addGameplayElements, removeGameplayElements);
+                            break;
+                        }
+                    case GameplayElement.Types.Projectile:
+                        {
+                            UpdateProjectile(gameplayElement as Projectile, timeInterval, addGameplayElements, removeGameplayElements);
+                            break;
+                        }
+                    case GameplayElement.Types.Explosion:
+                        {
+                            UpdateExplosion(gameplayElement as Explosion, timeInterval, removeGameplayElements);
+                            break;
+                        }
                 }
-                if (UserActions.MoveBackward)
-                {
-                    gameplayElement.MoveSpeed -= 5;
-                }
-                if (UserActions.TurnLeft)
-                {
-                    gameplayElement.TurnSpeed += 3;
-                }
-                if (UserActions.TurnRight)
-                {
-                    gameplayElement.TurnSpeed -= 3;
-                }
+            }
 
-                gameplayElement.Angle += gameplayElement.TurnSpeed;
+            GameplayElements.AddRange(addGameplayElements);
 
-                double angleInRadians = gameplayElement.Angle * Math.PI / 180;
-                gameplayElement.X += gameplayElement.MoveSpeed * Math.Cos(angleInRadians);
-                gameplayElement.Y += gameplayElement.MoveSpeed * Math.Sin(angleInRadians);
-
-                CheckBorderCollision(gameplayElement);
+            foreach (GameplayElement gameplayElement in removeGameplayElements)
+            {
+                GameplayElements.Remove(gameplayElement);
             }
 
             return GameplayElements;
         }
 
-        private static void CheckBorderCollision(GameplayElement gameplayElement)
+        private static void UpdateTank(Tank tank, double timeInterval, bool isUserActionsProcessed, List<GameplayElement> addGameplayElements, List<GameplayElement> removeGameplayElements)
         {
-            if (gameplayElement.X < gameplayElement.Radius)
+            if (!isUserActionsProcessed)
             {
-                gameplayElement.X = gameplayElement.Radius;
-            }
-            else if (gameplayElement.X > GameplayElement.Battlefield.Width - gameplayElement.Radius)
-            {
-                gameplayElement.X = GameplayElement.Battlefield.Width - gameplayElement.Radius;
+                tank.ProcessUserActions();
+                isUserActionsProcessed = true;
             }
 
-            if (gameplayElement.Y < gameplayElement.Radius)
+            if (UserActions.Shoot)
             {
-                gameplayElement.Y = gameplayElement.Radius;
+                if (tank.ShotCooldown == 0)
+                {
+                    Projectile projectile = new Projectile(tank.X, tank.Y, Tank.GunRadiusToTankRadius * tank.Radius, tank.Angle, tank.ShotMoveSpeed);
+                    projectile = projectile.SetupProjectile(Tank.GunLengthToTankRadius * tank.Radius);
+
+                    if (projectile != null)
+                    {
+                        addGameplayElements.Add(projectile);
+                        UpdateProjectile(projectile, timeInterval, addGameplayElements, removeGameplayElements);
+                    }
+
+                    tank.ShotCooldown += 1 / tank.ShotFrequency;
+                    UpdateTank(tank, timeInterval, isUserActionsProcessed, addGameplayElements, removeGameplayElements);
+                }
+                else
+                {
+                    tank.ShotCooldown -= timeInterval;
+
+                    if (tank.ShotCooldown > 0)
+                    {
+                        tank.UpdatePosition(timeInterval);
+                    }
+                    else
+                    {
+                        tank.UpdatePosition(tank.ShotCooldown + timeInterval);
+
+                        timeInterval = -tank.ShotCooldown;
+                        tank.ShotCooldown = 0;
+
+                        UpdateTank(tank, timeInterval, isUserActionsProcessed, addGameplayElements, removeGameplayElements);
+                    }
+                }
             }
-            else if (gameplayElement.Y > GameplayElement.Battlefield.Height - gameplayElement.Radius)
+            else
             {
-                gameplayElement.Y = GameplayElement.Battlefield.Height - gameplayElement.Radius;
+                tank.ShotCooldown -= timeInterval;
+
+                if (tank.ShotCooldown < 0)
+                {
+                    tank.ShotCooldown = 0;
+                }
+
+                tank.UpdatePosition(timeInterval);
+            }
+        }
+
+        private static void UpdateProjectile(Projectile projectile, double timeInterval, List<GameplayElement> addGameplayElements, List<GameplayElement> removeGameplayElements)
+        {
+            double? remainingTimeInterval = projectile.UpdatePosition(timeInterval);
+
+            if (remainingTimeInterval.HasValue)
+            {
+                removeGameplayElements.Add(projectile);
+
+                Explosion explosion = new Explosion(projectile.X, projectile.Y, projectile.Radius);
+                addGameplayElements.Add(explosion);
+
+                UpdateExplosion(explosion, remainingTimeInterval.Value, removeGameplayElements);
+            }
+        }
+
+        private static void UpdateExplosion(Explosion explosion, double timeInterval, List<GameplayElement> removeGameplayElements)
+        {
+            if (explosion.Animate(timeInterval))
+            {
+                removeGameplayElements.Add(explosion);
             }
         }
     }

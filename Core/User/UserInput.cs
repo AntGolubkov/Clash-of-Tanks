@@ -6,6 +6,7 @@
         private static bool keySPressed;
         private static bool keyAPressed;
         private static bool keyDPressed;
+        private static bool keySpacePressed;
 
         public static bool KeyWPressed
         {
@@ -41,6 +42,15 @@
             {
                 keyDPressed = value;
                 UserActions.TurnRight = KeyDPressed;
+            }
+        }
+        public static bool KeySpacePressed
+        {
+            private get => keySpacePressed;
+            set
+            {
+                keySpacePressed = value;
+                UserActions.Shoot = KeySpacePressed;
             }
         }
     }

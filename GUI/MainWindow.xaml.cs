@@ -12,7 +12,7 @@ namespace ClashOfTanks.GUI
             InitializeComponent();
         }
 
-        private void NewGameButton_Click(object sender, RoutedEventArgs e)
+        private void StartGameButton_Click(object sender, RoutedEventArgs e)
         {
             new GameWindow().Show();
             Close();

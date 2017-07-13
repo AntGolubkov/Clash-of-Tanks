@@ -1,13 +1,15 @@
-﻿using ClashOfTanks.Core.Gameplay.Models;
+﻿using System;
 
 namespace ClashOfTanks.Core.Gameplay
 {
     public class GameplayElement
     {
+        public enum Types { Tank, Projectile, Explosion }
+
         public static class Battlefield
         {
-            private static double width = 500;
-            private static double height = 500;
+            private static readonly double width = 500;
+            private static readonly double height = 500;
 
             public static double Width
             {
@@ -19,38 +21,75 @@ namespace ClashOfTanks.Core.Gameplay
             }
         }
 
+        private double angle;
+
+        public Types Type { get; private set; }
         public object Control { get; set; }
 
-        public double Radius { get; private set; }
+        public double X { get; protected set; }
+        public double Y { get; protected set; }
 
-        public double X { get; internal set; }
-        public double Y { get; internal set; }
+        protected double XIncrement { get; private set; }
+        protected double YIncrement { get; private set; }
 
-        private double angle;
+        public double Radius { get; protected set; }
         public double Angle
         {
             get => angle;
-            internal set
-            {
-                angle = value % 360;
-            }
+            private set => angle = value % 360;
         }
 
-        internal double MoveSpeed { get; set; }
-        internal double TurnSpeed { get; set; }
-
-        protected GameplayElement(double x, double y, double angle)
+        protected GameplayElement(Types type, double x, double y, double radius, double angle)
         {
+            Type = type;
             Control = null;
-
-            Radius = Tank.BaseRadius;
 
             X = x;
             Y = y;
-            Angle = angle;
 
-            MoveSpeed = 0;
-            TurnSpeed = 0;
+            XIncrement = 0;
+            YIncrement = 0;
+
+            Radius = radius;
+            Angle = angle;
+        }
+
+        protected void UpdatePosition(double moveSpeed, double turnSpeed, double timeInterval)
+        {
+            double turnSpeedInRadians = ToRadians(turnSpeed);
+            double halfTurn = turnSpeedInRadians * timeInterval / 2;
+            double move = turnSpeedInRadians != 0 ? 2 * moveSpeed / turnSpeedInRadians * Math.Sin(halfTurn) : moveSpeed * timeInterval;
+
+            double angleInRadians = ToRadians(Angle);
+            XIncrement = move * Math.Cos(angleInRadians + halfTurn);
+            YIncrement = move * Math.Sin(angleInRadians + halfTurn);
+
+            X += XIncrement;
+            Y += YIncrement;
+            Angle += turnSpeed * timeInterval;
+        }
+
+        private double ToRadians(double degrees) => degrees * Math.PI / 180;
+
+        protected void CheckCollision()
+        {
+            if (X < Radius)
+            {
+                X = Radius;
+            }
+            else if (X > Battlefield.Width - Radius)
+            {
+                X = Battlefield.Width - Radius;
+            }
+
+            if (Y < Radius)
+            {
+                Y = Radius;
+            }
+            else if (Y > Battlefield.Height - Radius)
+            {
+                Y = Battlefield.Height - Radius;
+            }
         }
     }
 }
