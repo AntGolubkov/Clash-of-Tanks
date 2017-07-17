@@ -4,7 +4,7 @@
     {
         private double MoveSpeed { get; set; }
 
-        public Projectile(double x, double y, double radius, double angle, double moveSpeed) : base(Types.Projectile, x, y, radius, angle) => MoveSpeed = moveSpeed;
+        public Projectile(double x, double y, double radius, double angle, double moveSpeed) : base(Types.Projectile, null, x, y, radius, angle) => MoveSpeed = moveSpeed;
 
         public Projectile SetupProjectile(double offset)
         {

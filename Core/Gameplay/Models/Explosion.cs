@@ -5,7 +5,7 @@
         private double InitialRadius { get; set; }
         private double MaxRadius { get; set; }
 
-        public Explosion(double x, double y, double radius) : base(Types.Explosion, x, y, radius, 0)
+        public Explosion(double x, double y, double radius) : base(Types.Explosion, null, x, y, radius, 0)
         {
             InitialRadius = Radius;
             MaxRadius = InitialRadius * 4;

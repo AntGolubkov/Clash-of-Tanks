@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 
+using ClashOfTanks.GUI.Service;
+
 namespace ClashOfTanks.GUI
 {
     /// <summary>
@@ -10,10 +12,17 @@ namespace ClashOfTanks.GUI
         public MainWindow()
         {
             InitializeComponent();
+
+            for (int i = 1; i <= InputProcessor.PatternCount; i++)
+            {
+                PlayersComboBox.Items.Add(i);
+            }
         }
 
         private void StartGameButton_Click(object sender, RoutedEventArgs e)
         {
+            InputProcessor.SetupPlayers((int)PlayersComboBox.SelectedValue);
+
             new GameWindow().Show();
             Close();
         }

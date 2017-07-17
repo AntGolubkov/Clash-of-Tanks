@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -36,7 +37,7 @@ namespace ClashOfTanks.GUI.Service
                         case GameplayElement.Types.Tank:
                             {
                                 control.Template = BattlefieldPanel.FindResource("TankControlTemplate") as ControlTemplate;
-                                control.Background = Brushes.Red;
+                                control.Background = ConvertColor(gameplayElement.Player.Color);
                                 Panel.SetZIndex(control, 1);
                                 break;
                             }
@@ -81,6 +82,29 @@ namespace ClashOfTanks.GUI.Service
                 BattlefieldPanel.Children.Add(control);
             }
         }
+
+        private static Brush ConvertColor(Player.Colors color)
+        {
+            switch (color)
+            {
+                case Player.Colors.Red:
+                    {
+                        return Brushes.Red;
+                    }
+                case Player.Colors.Blue:
+                    {
+                        return Brushes.Blue;
+                    }
+                case Player.Colors.White:
+                    {
+                        return Brushes.White;
+                    }
+                default:
+                    {
+                        return null;
+                    }
+            }
+        }
     }
 
     public static class FrameProcessor
@@ -113,6 +137,32 @@ namespace ClashOfTanks.GUI.Service
 
     public static class InputProcessor
     {
+        private static readonly int patternCount = UserInput.Patterns.Count;
+
+        public static int PatternCount
+        {
+            get => patternCount;
+        }
+
+        public static void SetupPlayers(int playerCount)
+        {
+            Dictionary<string, Player> usedPatterns = new Dictionary<string, Player>();
+            int i = 0;
+
+            foreach (var pattern in UserInput.Patterns)
+            {
+                usedPatterns.Add(pattern.Key, new Player(i));
+                i++;
+
+                if (i >= playerCount)
+                {
+                    break;
+                }
+            }
+
+            UserInput.Patterns = usedPatterns;
+        }
+
         public static void UpdateKeyInput(KeyEventArgs e)
         {
             switch (e.Key)
@@ -140,6 +190,31 @@ namespace ClashOfTanks.GUI.Service
                 case Key.Space:
                     {
                         UserInput.KeySpacePressed = e.IsDown;
+                        break;
+                    }
+                case Key.Up:
+                    {
+                        UserInput.KeyUpPressed = e.IsDown;
+                        break;
+                    }
+                case Key.Down:
+                    {
+                        UserInput.KeyDownPressed = e.IsDown;
+                        break;
+                    }
+                case Key.Left:
+                    {
+                        UserInput.KeyLeftPressed = e.IsDown;
+                        break;
+                    }
+                case Key.Right:
+                    {
+                        UserInput.KeyRightPressed = e.IsDown;
+                        break;
+                    }
+                case Key.Enter:
+                    {
+                        UserInput.KeyEnterPressed = e.IsDown;
                         break;
                     }
             }

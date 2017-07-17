@@ -45,6 +45,7 @@
     <Compile Include="Gameplay\Models\Explosion.cs" />
     <Compile Include="Gameplay\Models\Projectile.cs" />
     <Compile Include="Gameplay\Models\Tank.cs" />
+    <Compile Include="User\Player.cs" />
     <Compile Include="User\UserActions.cs" />
     <Compile Include="User\UserInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

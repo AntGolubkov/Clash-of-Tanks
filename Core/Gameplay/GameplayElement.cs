@@ -1,5 +1,7 @@
 ﻿using System;
 
+using ClashOfTanks.Core.User;
+
 namespace ClashOfTanks.Core.Gameplay
 {
     public class GameplayElement
@@ -26,6 +28,8 @@ namespace ClashOfTanks.Core.Gameplay
         public Types Type { get; private set; }
         public object Control { get; set; }
 
+        public Player Player { get; private set; }
+
         public double X { get; protected set; }
         public double Y { get; protected set; }
 
@@ -39,10 +43,12 @@ namespace ClashOfTanks.Core.Gameplay
             private set => angle = value % 360;
         }
 
-        protected GameplayElement(Types type, double x, double y, double radius, double angle)
+        protected GameplayElement(Types type, Player player, double x, double y, double radius, double angle)
         {
             Type = type;
             Control = null;
+
+            Player = player;
 
             X = x;
             Y = y;

@@ -26,7 +26,7 @@ namespace ClashOfTanks.Core.Gameplay.Models
         internal double ShotMoveSpeed { get; private set; }
         internal double ShotCooldown { get; set; }
 
-        internal Tank(double x, double y, double radius, double angle) : base(Types.Tank, x, y, radius, angle)
+        internal Tank(Player player, double x, double y, double radius, double angle) : base(Types.Tank, player, x, y, radius, angle)
         {
             MoveSpeed = 250;
             TurnSpeed = 180;
@@ -34,7 +34,7 @@ namespace ClashOfTanks.Core.Gameplay.Models
             CurrentMoveSpeed = 0;
             CurrentTurnSpeed = 0;
 
-            ShotFrequency = 180;
+            ShotFrequency = 30;
             ShotMoveSpeed = 500;
             ShotCooldown = 0;
         }
@@ -43,22 +43,22 @@ namespace ClashOfTanks.Core.Gameplay.Models
         {
             CurrentMoveSpeed = 0;
 
-            if (UserActions.MoveForward)
+            if (Player.Actions.MoveForward)
             {
                 CurrentMoveSpeed += MoveSpeed;
             }
-            if (UserActions.MoveBackward)
+            if (Player.Actions.MoveBackward)
             {
                 CurrentMoveSpeed -= MoveSpeed;
             }
 
             CurrentTurnSpeed = 0;
 
-            if (UserActions.TurnLeft)
+            if (Player.Actions.TurnLeft)
             {
                 CurrentTurnSpeed += TurnSpeed;
             }
-            if (UserActions.TurnRight)
+            if (Player.Actions.TurnRight)
             {
                 CurrentTurnSpeed -= TurnSpeed;
             }

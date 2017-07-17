@@ -11,10 +11,28 @@ namespace ClashOfTanks.Core.Gameplay
 
         public static void SetupGameplay()
         {
-            GameplayElements = new List<GameplayElement>()
+            GameplayElements = new List<GameplayElement>();
+
+            double tankRadius = 10;
+            int i = 0;
+
+            foreach (var pattern in UserInput.Patterns)
             {
-                new Tank(GameplayElement.Battlefield.Width / 2, GameplayElement.Battlefield.Height / 2, 10, 90)
-            };
+                double tankX;
+
+                if (UserInput.Patterns.Count != 1)
+                {
+                    tankX = tankRadius + i * (GameplayElement.Battlefield.Width - tankRadius * 2) / (UserInput.Patterns.Count - 1);
+                }
+                else
+                {
+                    tankX = GameplayElement.Battlefield.Width / 2;
+                }
+
+                GameplayElements.Add(new Tank(pattern.Value, tankX, GameplayElement.Battlefield.Height / 2, tankRadius, 90));
+
+                i++;
+            }
         }
 
         public static IEnumerable<GameplayElement> UpdateGameplay(double timeInterval)
@@ -62,7 +80,7 @@ namespace ClashOfTanks.Core.Gameplay
                 isUserActionsProcessed = true;
             }
 
-            if (UserActions.Shoot)
+            if (tank.Player.Actions.Shoot)
             {
                 if (tank.ShotCooldown == 0)
                 {
