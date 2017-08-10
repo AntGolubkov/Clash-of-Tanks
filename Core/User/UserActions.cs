@@ -1,6 +1,9 @@
-﻿namespace ClashOfTanks.Core.User
+﻿using System;
+
+namespace ClashOfTanks.Core.User
 {
-    class UserActions
+    [Serializable]
+    public class UserActions
     {
         public bool MoveForward { get; set; }
         public bool MoveBackward { get; set; }

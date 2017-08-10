@@ -5,9 +5,9 @@
              
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              
-             StartupUri="MainWindow.xaml">
+             StartupUri="Windows/MainWindow.xaml">
     
     <Application.Resources>
-        <system:String x:Key="ApplicationTitle">Clash of Tanks (v0.3.0)</system:String>
+        <system:String x:Key="ApplicationTitle">Clash of Tanks</system:String>
     </Application.Resources>
 </Application>

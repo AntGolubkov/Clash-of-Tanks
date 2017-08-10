@@ -45,11 +45,17 @@
     <Compile Include="Gameplay\Models\Explosion.cs" />
     <Compile Include="Gameplay\Models\Projectile.cs" />
     <Compile Include="Gameplay\Models\Tank.cs" />
+    <Compile Include="GameSession.cs" />
+    <Compile Include="NetworkConnection.cs" />
+    <Compile Include="NetworkController.Client.cs" />
+    <Compile Include="NetworkController.Server.cs" />
+    <Compile Include="NetworkUtility.cs" />
+    <Compile Include="PlayerInfo\Player.cs" />
+    <Compile Include="User\ClientData.cs" />
     <Compile Include="User\Player.cs" />
     <Compile Include="User\UserActions.cs" />
     <Compile Include="User\UserInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

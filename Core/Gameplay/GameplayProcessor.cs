@@ -8,28 +8,33 @@ namespace ClashOfTanks.Core.Gameplay
     public static class GameplayProcessor
     {
         private static List<GameplayElement> GameplayElements { get; set; }
+        internal static List<GameplayElement> Tanks { get; private set; }
 
         public static void SetupGameplay()
         {
             GameplayElements = new List<GameplayElement>();
+            Tanks = new List<GameplayElement>();
 
             double tankRadius = 10;
             int i = 0;
 
-            foreach (var pattern in UserInput.Patterns)
+            foreach (Player player in GameSession.Current.Players)
             {
                 double tankX;
 
-                if (UserInput.Patterns.Count != 1)
+                if (GameSession.Current.Players.Count != 1)
                 {
-                    tankX = tankRadius + i * (GameplayElement.Battlefield.Width - tankRadius * 2) / (UserInput.Patterns.Count - 1);
+                    tankX = tankRadius + i * (GameplayElement.Battlefield.Width - tankRadius * 2) / (GameSession.Current.Players.Count - 1);
                 }
                 else
                 {
                     tankX = GameplayElement.Battlefield.Width / 2;
                 }
 
-                GameplayElements.Add(new Tank(pattern.Value, tankX, GameplayElement.Battlefield.Height / 2, tankRadius, 90));
+                Tank tank = new Tank(player, tankX, GameplayElement.Battlefield.Height / 2, tankRadius, 90);
+                player.Tank = tank;
+                GameplayElements.Add(tank);
+                Tanks.Add(tank);
 
                 i++;
             }
@@ -67,6 +72,7 @@ namespace ClashOfTanks.Core.Gameplay
             foreach (GameplayElement gameplayElement in removeGameplayElements)
             {
                 GameplayElements.Remove(gameplayElement);
+                gameplayElement.IsRemoved = true;
             }
 
             return GameplayElements;
@@ -84,7 +90,7 @@ namespace ClashOfTanks.Core.Gameplay
             {
                 if (tank.ShotCooldown == 0)
                 {
-                    Projectile projectile = new Projectile(tank.X, tank.Y, Tank.GunRadiusToTankRadius * tank.Radius, tank.Angle, tank.ShotMoveSpeed);
+                    Projectile projectile = new Projectile(tank.X, tank.Y, Tank.GunRadiusToTankRadius * tank.Radius, tank.Angle, tank.ShotMoveSpeed, tank.ShotDamage);
                     projectile = projectile.SetupProjectile(Tank.GunLengthToTankRadius * tank.Radius);
 
                     if (projectile != null)
@@ -140,6 +146,20 @@ namespace ClashOfTanks.Core.Gameplay
                 addGameplayElements.Add(explosion);
 
                 UpdateExplosion(explosion, remainingTimeInterval.Value, removeGameplayElements);
+
+                if (projectile.LinkedGameplayElement != null)
+                {
+                    if ((projectile.LinkedGameplayElement as Tank).ProcessCollision(projectile.Damage))
+                    {
+                        removeGameplayElements.Add(projectile.LinkedGameplayElement);
+                        Tanks.Remove(projectile.LinkedGameplayElement);
+
+                        Explosion tankExplosion = new Explosion(projectile.LinkedGameplayElement.X, projectile.LinkedGameplayElement.Y, projectile.LinkedGameplayElement.Radius);
+                        addGameplayElements.Add(tankExplosion);
+
+                        UpdateExplosion(tankExplosion, remainingTimeInterval.Value, removeGameplayElements);
+                    }
+                }
             }
         }
 

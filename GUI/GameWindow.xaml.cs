@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ClashOfTanks.GUI.Service;
+using ClashOfTanks.Core;
 
 namespace ClashOfTanks.GUI
 {
@@ -12,11 +13,14 @@ namespace ClashOfTanks.GUI
     /// </summary>
     public partial class GameWindow : Window
     {
+        public static bool IsClient { get; private set; }
+
         private TimeSpan LastRenderingTime { get; set; }
 
-        public GameWindow()
+        public GameWindow(bool isClient)
         {
             InitializeComponent();
+            IsClient = isClient;
             LastRenderingTime = TimeSpan.Zero;
         }
 
@@ -35,10 +39,35 @@ namespace ClashOfTanks.GUI
                 return;
             }
 
-            FrameProcessor.UpdateFrame((currentRenderingTime - LastRenderingTime).TotalSeconds);
+            try
+            {
+                FrameProcessor.UpdateFrame((currentRenderingTime - LastRenderingTime).TotalSeconds);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.StackTrace}", $"{ex.Message}");
+            }
+            
             LastRenderingTime = currentRenderingTime;
         }
 
-        private void Window_KeyEvent(object sender, KeyEventArgs e) => InputProcessor.UpdateKeyInput(e);
+        private void Window_KeyEvent(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (IsClient)
+                {
+                    InputProcessor.UpdateKeyInput(NetworkController.Client.Player, e);
+                }
+                else
+                {
+                    InputProcessor.UpdateKeyInput(GameSession.Current.Players[0], e);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{ex.StackTrace}", $"{ex.Message}");
+            }
+        }
     }
 }

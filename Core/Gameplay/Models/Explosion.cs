@@ -1,5 +1,8 @@
-﻿namespace ClashOfTanks.Core.Gameplay.Models
+﻿using System;
+
+namespace ClashOfTanks.Core.Gameplay.Models
 {
+    [Serializable]
     sealed class Explosion : GameplayElement
     {
         private double InitialRadius { get; set; }

@@ -80,5 +80,10 @@
                     Background="LightGray"
                     Width="{x:Static gameplay:GameplayElement+Battlefield.Width}" Height="{x:Static gameplay:GameplayElement+Battlefield.Height}"/>
         </Border>
+
+        <TextBlock x:Name="ResultTextBlock"
+                   FontFamily="Times New Roman" FontSize="40" FontWeight="Bold"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Visibility="Hidden"/>
     </Grid>
 </Window>

@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 using ClashOfTanks.Core.User;
 
 namespace ClashOfTanks.Core.Gameplay
 {
+    [Serializable]
     public class GameplayElement
     {
         public enum Types { Tank, Projectile, Explosion }
@@ -26,7 +30,6 @@ namespace ClashOfTanks.Core.Gameplay
         private double angle;
 
         public Types Type { get; private set; }
-        public object Control { get; set; }
 
         public Player Player { get; private set; }
 
@@ -43,10 +46,15 @@ namespace ClashOfTanks.Core.Gameplay
             private set => angle = value % 360;
         }
 
+        internal GameplayElement LinkedGameplayElement { get; private set; }
+
+        public bool HasControl { get; set; }
+        public bool HasClientControl { get; set; }
+        public bool IsRemoved { get; set; }
+
         protected GameplayElement(Types type, Player player, double x, double y, double radius, double angle)
         {
             Type = type;
-            Control = null;
 
             Player = player;
 
@@ -58,6 +66,11 @@ namespace ClashOfTanks.Core.Gameplay
 
             Radius = radius;
             Angle = angle;
+
+            LinkedGameplayElement = null;
+            HasControl = false;
+            HasClientControl = false;
+            IsRemoved = false;
         }
 
         protected void UpdatePosition(double moveSpeed, double turnSpeed, double timeInterval)
@@ -77,7 +90,7 @@ namespace ClashOfTanks.Core.Gameplay
 
         private double ToRadians(double degrees) => degrees * Math.PI / 180;
 
-        protected void CheckCollision()
+        protected void CheckBorderCollision()
         {
             if (X < Radius)
             {
@@ -95,6 +108,42 @@ namespace ClashOfTanks.Core.Gameplay
             else if (Y > Battlefield.Height - Radius)
             {
                 Y = Battlefield.Height - Radius;
+            }
+        }
+
+        protected double? CheckGameplayElementCollision(GameplayElement sourceElement, List<GameplayElement> destinationElements)
+        {
+            destinationElements = destinationElements.OrderBy(e => e.X - e.Radius).ToList();
+            double squareCollisionLength = double.MaxValue;
+
+            for (int i = 0; i < destinationElements.Count(); i++)
+            {
+                if (sourceElement.X + sourceElement.Radius < destinationElements[i].X - destinationElements[i].Radius)
+                {
+                    break;
+                }
+                else
+                {
+                    double deltaX = destinationElements[i].X - sourceElement.X;
+                    double deltaY = destinationElements[i].Y - sourceElement.Y;
+                    double squareLength = Math.Pow(deltaX, 2) + Math.Pow(deltaY, 2);
+                    double squareRadiusSum = Math.Pow(sourceElement.Radius + destinationElements[i].Radius, 2);
+
+                    if (squareLength <= squareRadiusSum && squareRadiusSum - squareLength < squareCollisionLength)
+                    {
+                        sourceElement.LinkedGameplayElement = destinationElements[i];
+                        squareCollisionLength = squareRadiusSum - squareLength;
+                    }
+                }
+            }
+
+            if (squareCollisionLength != double.MaxValue)
+            {
+                return Math.Sqrt(squareCollisionLength);
+            }
+            else
+            {
+                return null;
             }
         }
     }

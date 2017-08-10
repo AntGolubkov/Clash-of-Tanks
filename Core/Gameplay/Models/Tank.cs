@@ -1,7 +1,9 @@
 ﻿using ClashOfTanks.Core.User;
+using System;
 
 namespace ClashOfTanks.Core.Gameplay.Models
 {
+    [Serializable]
     public sealed class Tank : GameplayElement
     {
         private static readonly double gunRadiusToTankRadius = 0.2;
@@ -22,8 +24,11 @@ namespace ClashOfTanks.Core.Gameplay.Models
         private double CurrentMoveSpeed { get; set; }
         private double CurrentTurnSpeed { get; set; }
 
+        internal double Health { get; set; }
+
         internal double ShotFrequency { get; private set; }
         internal double ShotMoveSpeed { get; private set; }
+        internal double ShotDamage { get; private set; }
         internal double ShotCooldown { get; set; }
 
         internal Tank(Player player, double x, double y, double radius, double angle) : base(Types.Tank, player, x, y, radius, angle)
@@ -34,8 +39,11 @@ namespace ClashOfTanks.Core.Gameplay.Models
             CurrentMoveSpeed = 0;
             CurrentTurnSpeed = 0;
 
-            ShotFrequency = 30;
+            Health = 1000;
+
+            ShotFrequency = 10;
             ShotMoveSpeed = 500;
+            ShotDamage = 100;
             ShotCooldown = 0;
         }
 
@@ -67,7 +75,22 @@ namespace ClashOfTanks.Core.Gameplay.Models
         internal void UpdatePosition(double timeInterval)
         {
             UpdatePosition(CurrentMoveSpeed, CurrentTurnSpeed, timeInterval);
-            CheckCollision();
+            CheckBorderCollision();
+        }
+
+        internal bool ProcessCollision(double damage)
+        {
+            bool hasZeroHealth = false;
+            Health -= damage;
+
+            if (Health <= 0)
+            {
+                Health = 0;
+                Player.IsLoser = true;
+                hasZeroHealth = true;
+            }
+
+            return hasZeroHealth;
         }
     }
 }
