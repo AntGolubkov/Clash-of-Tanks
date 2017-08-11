@@ -13,6 +13,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="ThreeDBorderWindow"
         
+        Initialized="Window_Initialized"
         Closed="Window_Closed">
     
     <Grid Margin="40">
@@ -40,22 +41,25 @@
                      HorizontalAlignment="Stretch" TextAlignment="Center"
                      PreviewKeyDown="PlayerNameTextBox_PreviewKeyDown" PreviewTextInput="PlayerNameTextBox_PreviewTextInput" TextChanged="PlayerNameTextBox_TextChanged"/>
             
-            <TextBlock FontFamily="Lucida Console" FontSize="20" FontWeight="Bold"
-                       HorizontalAlignment="Center">
+            <StackPanel Orientation="Vertical"
+                        HorizontalAlignment="Center">
                 
-                <Run Text="Acceptable Characters:"/>
-                <LineBreak/>
-                <Run Text=" &#x2022; Alphabetic (A-Z)"/>
-                <LineBreak/>
-                <Run Text=" &#x2022; Numeric (0-9)"/>
-                <LineBreak/>
-                <Run Text=" &#x2022; Underscore (_)"/>
-                <LineBreak/>
-                <LineBreak/>
-                <Run Text="Acceptable Length:"/>
-                <LineBreak/>
-                <Run Text=" &#x2022; 2-12 Characters"/>
-            </TextBlock>
+                <TextBlock x:Name="AcceptableCharactersTextBlock"
+                           FontFamily="Lucida Console" FontSize="20" FontWeight="Bold"
+                           HorizontalAlignment="Left">
+                    
+                    <Run Text="Acceptable Characters:"/>
+                    <LineBreak/>
+                </TextBlock>
+                
+                <TextBlock x:Name="AcceptableLengthTextBlock"
+                           FontFamily="Lucida Console" FontSize="20" FontWeight="Bold"
+                           HorizontalAlignment="Left">
+                    
+                    <Run Text="Acceptable Length:"/>
+                    <LineBreak/>
+                </TextBlock>
+            </StackPanel>
         </StackPanel>
         
         <Button x:Name="OKButton"

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 
 using ClashOfTanks.Core.PlayerInfo;
@@ -21,15 +22,31 @@ namespace ClashOfTanks.GUI.Windows
         public PlayerNameWindow()
         {
             InitializeComponent();
-
             StringBuilder characterGroups = new StringBuilder();
 
             foreach (KeyValuePair<string, string> characterGroup in Player.Requirements.NameCharacters)
             {
                 characterGroups.Append(characterGroup.Value);
+                AcceptableCharactersTextBlock.Inlines.Add(new Run($" \u2022 {characterGroup.Key} ({characterGroup.Value})"));
+                AcceptableCharactersTextBlock.Inlines.Add(new LineBreak());
             }
 
             InputChecker = new TextBoxInputChecker($@"\A[{characterGroups.ToString()}]+\z", Player.Requirements.NameMaxLength);
+            AcceptableLengthTextBlock.Inlines.Add(new Run($" \u2022 {Player.Requirements.NameMinLength}-{Player.Requirements.NameMaxLength} Characters"));
+        }
+
+        private async void Window_Initialized(object sender, EventArgs e)
+        {
+            try
+            {
+                string playerName = await new SettingsFileProcessor().ReadSettings("PlayerName") ?? string.Empty;
+
+                if (InputChecker.IsValidInput(PlayerNameTextBox, playerName))
+                {
+                    PlayerNameTextBox.Text = playerName;
+                }
+            }
+            catch (Exception) { }
 
             DataObject.AddPastingHandler(PlayerNameTextBox, TextBox_Paste);
             PlayerNameTextBox.SelectAll();
@@ -64,9 +81,10 @@ namespace ClashOfTanks.GUI.Windows
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
+            Player.Current = new Player(PlayerNameTextBox.Text);
+
             NextWindow = new GameListWindow();
             NextWindow.Show();
-
             Close();
         }
 

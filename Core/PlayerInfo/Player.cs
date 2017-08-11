@@ -16,5 +16,14 @@ namespace ClashOfTanks.Core.PlayerInfo
             public static int NameMinLength { get; } = 2;
             public static int NameMaxLength { get; } = 12;
         }
+
+        public static Player Current { get; set; } = null;
+
+        public string Name { get; private set; }
+
+        public Player(string name)
+        {
+            Name = name;
+        }
     }
 }

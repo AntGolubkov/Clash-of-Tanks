@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Threading;
 using System.Windows;
 
 using ClashOfTanks.GUI.Utility;
@@ -13,11 +15,22 @@ namespace ClashOfTanks.GUI.Windows
         public MainWindow()
         {
             InitializeComponent();
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            string result = new AssemblyChecker().GetMissingAssemblies();
+            string result;
+
+            try
+            {
+                result = new AssemblyChecker().GetMissingAssemblies();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error! Failed to Get Missing Assemblies", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             if (result == null)
             {
@@ -26,7 +39,7 @@ namespace ClashOfTanks.GUI.Windows
             }
             else
             {
-                MessageBox.Show($"These files are missing:{Environment.NewLine}{result}", "Error! Missing Files", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"These files are missing:{Environment.NewLine}{result}", "Error! Failed to Find Files", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
