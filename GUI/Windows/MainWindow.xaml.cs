@@ -15,11 +15,11 @@ namespace ClashOfTanks.GUI.Windows
         public MainWindow()
         {
             InitializeComponent();
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             string result;
 
             try
