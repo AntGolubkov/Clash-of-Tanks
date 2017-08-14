@@ -39,7 +39,8 @@
                      FontFamily="Lucida Console" FontSize="40" FontWeight="Bold"
                      Margin="0,20,0,20" Padding="20"
                      HorizontalAlignment="Stretch" TextAlignment="Center"
-                     PreviewKeyDown="PlayerNameTextBox_PreviewKeyDown" PreviewTextInput="PlayerNameTextBox_PreviewTextInput" TextChanged="PlayerNameTextBox_TextChanged"/>
+                     PreviewKeyDown="PlayerNameTextBox_PreviewKeyDown" PreviewTextInput="PlayerNameTextBox_PreviewTextInput" TextChanged="PlayerNameTextBox_TextChanged"
+                     LostFocus="PlayerNameTextBox_LostFocus"/>
             
             <StackPanel Orientation="Vertical"
                         HorizontalAlignment="Center">

@@ -18,6 +18,7 @@ namespace ClashOfTanks.GUI.Windows
     {
         private Window NextWindow { get; set; } = null;
         private TextBoxInputChecker InputChecker { get; set; }
+        private bool IsLoadPlayerName { get; set; } = true;
 
         public PlayerNameWindow()
         {
@@ -33,6 +34,9 @@ namespace ClashOfTanks.GUI.Windows
 
             InputChecker = new TextBoxInputChecker($@"\A[{characterGroups.ToString()}]+\z", Player.Requirements.NameMaxLength);
             AcceptableLengthTextBlock.Inlines.Add(new Run($" \u2022 {Player.Requirements.NameMinLength}-{Player.Requirements.NameMaxLength} Characters"));
+
+            DataObject.AddPastingHandler(PlayerNameTextBox, TextBox_Paste);
+            PlayerNameTextBox.Focus();
         }
 
         private async void Window_Initialized(object sender, EventArgs e)
@@ -41,16 +45,13 @@ namespace ClashOfTanks.GUI.Windows
             {
                 string playerName = await new SettingsFileProcessor().ReadSettings("PlayerName") ?? string.Empty;
 
-                if (InputChecker.IsValidInput(PlayerNameTextBox, playerName))
+                if (IsLoadPlayerName && InputChecker.IsValidInput(PlayerNameTextBox, playerName))
                 {
                     PlayerNameTextBox.Text = playerName;
+                    PlayerNameTextBox.SelectAll();
                 }
             }
             catch (Exception) { }
-
-            DataObject.AddPastingHandler(PlayerNameTextBox, TextBox_Paste);
-            PlayerNameTextBox.SelectAll();
-            PlayerNameTextBox.Focus();
         }
 
         private void PlayerNameTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -76,7 +77,13 @@ namespace ClashOfTanks.GUI.Windows
 
         private void PlayerNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            IsLoadPlayerName = false;
             OKButton.IsEnabled = (sender as TextBox).Text.Length >= Player.Requirements.NameMinLength;
+        }
+
+        private void PlayerNameTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            IsLoadPlayerName = false;
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
