@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace ClashOfTanks.Core.PlayerInfo
+using ClashOfTanks.Core.PlayerModels;
+using ClashOfTanks.Core.NetworkModels;
+
+namespace ClashOfTanks.Core.GameModels
 {
-    public sealed class Player
+    public sealed class Game
     {
         public static class Requirements
         {
@@ -17,13 +20,19 @@ namespace ClashOfTanks.Core.PlayerInfo
             public static int NameMaxLength { get; } = 12;
         }
 
-        public static Player Current { get; set; } = null;
+        public static Game Current { get; set; } = null;
 
         public string Name { get; private set; }
+        public List<Player> Players { get; private set; }
 
-        public Player(string name)
+        public Game(string name)
         {
             Name = name;
+
+            Players = new List<Player>()
+            {
+                Player.Current
+            };
         }
     }
 }

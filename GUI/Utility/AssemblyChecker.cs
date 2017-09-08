@@ -44,18 +44,21 @@ namespace ClashOfTanks.GUI.Utility
         {
             foreach (AssemblyName assembly in referencingAssembly.GetReferencedAssemblies())
             {
+                Assembly loadedAssembly;
+
                 try
                 {
-                    Assembly loadedAssembly = Assembly.ReflectionOnlyLoad(assembly.FullName);
-
-                    if (!loadedAssembly.GlobalAssemblyCache)
-                    {
-                        RecursiveCheck(loadedAssembly);
-                    }
+                    loadedAssembly = Assembly.ReflectionOnlyLoad(assembly.FullName);
                 }
                 catch (FileNotFoundException)
                 {
                     MissingAssemblies.Add(assembly);
+                    continue;
+                }
+
+                if (!loadedAssembly.GlobalAssemblyCache)
+                {
+                    RecursiveCheck(loadedAssembly);
                 }
             }
         }

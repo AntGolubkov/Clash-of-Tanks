@@ -7,55 +7,55 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 
-using ClashOfTanks.Core.PlayerModels;
+using ClashOfTanks.Core.GameModels;
 using ClashOfTanks.GUI.Utility;
 
 namespace ClashOfTanks.GUI.Windows
 {
     /// <summary>
-    /// Interaction logic for PlayerNameWindow.xaml
+    /// Interaction logic for CreateGameWindow.xaml
     /// </summary>
-    public partial class PlayerNameWindow : Window
+    public partial class CreateGameWindow : Window
     {
         private Window NextWindow { get; set; } = null;
         private TextBoxInputChecker InputChecker { get; set; }
-        private bool IsLoadPlayerName { get; set; } = true;
+        private bool IsLoadGameName { get; set; } = true;
 
-        public PlayerNameWindow()
+        public CreateGameWindow()
         {
             InitializeComponent();
             StringBuilder characterGroups = new StringBuilder();
 
-            foreach (KeyValuePair<string, string> characterGroup in Player.Requirements.NameCharacters)
+            foreach (KeyValuePair<string, string> characterGroup in Game.Requirements.NameCharacters)
             {
                 characterGroups.Append(characterGroup.Value);
                 AcceptableCharactersTextBlock.Inlines.Add(new Run($" \u2022 {characterGroup.Key} ({characterGroup.Value})"));
                 AcceptableCharactersTextBlock.Inlines.Add(new LineBreak());
             }
 
-            InputChecker = new TextBoxInputChecker($@"\A[{characterGroups.ToString()}]+\z", Player.Requirements.NameMaxLength);
-            AcceptableLengthTextBlock.Inlines.Add(new Run($" \u2022 {Player.Requirements.NameMinLength}-{Player.Requirements.NameMaxLength} Characters"));
+            InputChecker = new TextBoxInputChecker($@"\A[{characterGroups.ToString()}]+\z", Game.Requirements.NameMaxLength);
+            AcceptableLengthTextBlock.Inlines.Add(new Run($" \u2022 {Game.Requirements.NameMinLength}-{Game.Requirements.NameMaxLength} Characters"));
 
-            DataObject.AddPastingHandler(PlayerNameTextBox, TextBox_Paste);
-            PlayerNameTextBox.Focus();
+            DataObject.AddPastingHandler(GameNameTextBox, TextBox_Paste);
+            GameNameTextBox.Focus();
         }
 
         private async void Window_Initialized(object sender, EventArgs e)
         {
             try
             {
-                string playerName = await SettingsFileProcessor.ReadSettings("DefaultPlayerName") ?? string.Empty;
+                string gameName = await SettingsFileProcessor.ReadSettings("DefaultGameName") ?? string.Empty;
 
-                if (IsLoadPlayerName && InputChecker.IsValidInput(PlayerNameTextBox, playerName))
+                if (IsLoadGameName && InputChecker.IsValidInput(GameNameTextBox, gameName))
                 {
-                    PlayerNameTextBox.Text = playerName;
-                    PlayerNameTextBox.SelectAll();
+                    GameNameTextBox.Text = gameName;
+                    GameNameTextBox.SelectAll();
                 }
             }
             catch (Exception) { }
         }
 
-        private void PlayerNameTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void GameNameTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space)
             {
@@ -63,7 +63,7 @@ namespace ClashOfTanks.GUI.Windows
             }
         }
 
-        private void PlayerNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void GameNameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !InputChecker.IsValidInput(sender as TextBox, e.Text);
         }
@@ -76,30 +76,30 @@ namespace ClashOfTanks.GUI.Windows
             }
         }
 
-        private void PlayerNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void GameNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            OKButton.IsEnabled = (sender as TextBox).Text.Length >= Player.Requirements.NameMinLength;
-            IsLoadPlayerName = false;
+            OKButton.IsEnabled = (sender as TextBox).Text.Length >= Game.Requirements.NameMinLength;
+            IsLoadGameName = false;
         }
 
-        private void PlayerNameTextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void GameNameTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            IsLoadPlayerName = false;
+            IsLoadGameName = false;
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
-            Player.Current = new Player(PlayerNameTextBox.Text);
+            Game.Current = new Game(GameNameTextBox.Text);
             Task.Run(() =>
+            {
+                try
                 {
-                    try
-                    {
-                        SettingsFileProcessor.WriteSettings("DefaultPlayerName", Player.Current.Name);
-                    }
-                    catch (Exception) { }
-                });
+                    SettingsFileProcessor.WriteSettings("DefaultGameName", Game.Current.Name);
+                }
+                catch (Exception) { }
+            });
 
-            NextWindow = new GameListWindow();
+            NextWindow = new GameLobbyWindow();
             NextWindow.Show();
             Close();
         }
@@ -113,7 +113,7 @@ namespace ClashOfTanks.GUI.Windows
         {
             if (NextWindow == null)
             {
-                new MainWindow().Show();
+                new GameListWindow().Show();
             }
         }
     }

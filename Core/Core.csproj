@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameModels\Game.cs" />
     <Compile Include="Gameplay\GameplayElement.cs" />
     <Compile Include="Gameplay\GameplayProcessor.cs" />
     <Compile Include="Gameplay\Models\Explosion.cs" />
@@ -49,8 +50,10 @@
     <Compile Include="NetworkConnection.cs" />
     <Compile Include="NetworkController.Client.cs" />
     <Compile Include="NetworkController.Server.cs" />
+    <Compile Include="NetworkModels\Network.cs" />
+    <Compile Include="NetworkModels\Node.cs" />
     <Compile Include="NetworkUtility.cs" />
-    <Compile Include="PlayerInfo\Player.cs" />
+    <Compile Include="PlayerModels\Player.cs" />
     <Compile Include="User\ClientData.cs" />
     <Compile Include="User\Player.cs" />
     <Compile Include="User\UserActions.cs" />

@@ -77,7 +77,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\CreateGameWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\GameListWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\GameLobbyWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -92,12 +100,19 @@
     <Compile Include="ConnectWindow.xaml.cs">
       <DependentUpon>ConnectWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\GameController.cs" />
     <Compile Include="ControlTemplateParameters.cs" />
     <Compile Include="GUIObject.cs" />
     <Compile Include="Utility\SettingsFileProcessor.cs" />
     <Compile Include="Utility\TextBoxInputChecker.cs" />
+    <Compile Include="Windows\CreateGameWindow.xaml.cs">
+      <DependentUpon>CreateGameWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\GameListWindow.xaml.cs">
       <DependentUpon>GameListWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\GameLobbyWindow.xaml.cs">
+      <DependentUpon>GameLobbyWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\PlayerNameWindow.xaml.cs">
       <DependentUpon>PlayerNameWindow.xaml</DependentUpon>
